@@ -1,5 +1,10 @@
 import User from "../models/user.js"
 
+//function: register
+//parameters: req, res
+//returns: registered user
+//description: takes in email, password, name, and role from the request body and creates a new user
+//              this user is then saved to the databse if there is not one alreay present withe the email
 export const register = async (req, res) => {
     const { email, password, name, role} = req.body
     try{

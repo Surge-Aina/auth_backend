@@ -17,5 +17,6 @@ export const login = async (req, res) => {
         }
     }catch(error){
         console.error('could not login')
+        return res.status(500).json({error: 'could not login'})
     }
 }
