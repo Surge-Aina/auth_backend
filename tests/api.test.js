@@ -10,7 +10,7 @@ const userLoginTestObj = {
     "password": "test123Pass",
     "role":"admin"
 }
-describe("POST /api/login/admin", () => {
+describe("POST /api/", () => {
     test("should login admin user", async () => {
         return request(app)
                 .post("/api/login/admin")
@@ -21,3 +21,4 @@ describe("POST /api/login/admin", () => {
                 })
     })
 })
+

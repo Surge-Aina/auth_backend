@@ -16,3 +16,7 @@ Development Server:
     BACKEND_API_URL
     FRONTEND_URL
 
+toDos
+-implement login with email and password(passport)
+-implement crud operation for getting workers under manager
+-creating tests

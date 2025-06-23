@@ -1,26 +1,12 @@
 import mongoose from 'mongoose'
 
-// const UserScheema = new mongoose.Schema({
-//     username: {
-//         type: String,
-//         required: true,
-//         unique: true
-//     },
-//     password:{
-//         type: String,
-//         required: true,
-//     },
-//     type:{
-//         type: String,
-//         required: true
-//     }
-// })
+const inv_reqSchema = new mongoose.Schema({
+  title: {type: String},
+  content: {type: String},
+  addressedTo: {type: String, enum:['admin', 'manager', 'worker']}
+})
 
-// const User = mongoose.model('User', UserScheema)
-// export default User
-
-
-//best practices schema
+//best practices user schema
 const UserSchema = new mongoose.Schema({
   name: { type: String, required: true },
   email: { type: String, unique: true, required: true },
@@ -36,7 +22,11 @@ const UserSchema = new mongoose.Schema({
   createdAt: { type: Date, default: Date.now },  // add flexible or role-specific fields later
   managerNotes: { type: String }, // for managers only maybe
   customerPreferences: { type: Object }, // for customers
+  manager: { type: String }, //whos is this user's manager if they are worker
+  inv_req: inv_reqSchema,
 });
+
+//
 
 const User = mongoose.model('User', UserSchema)
 export default User

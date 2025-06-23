@@ -12,13 +12,13 @@ import './config/passport.js'
 
 const app = express()
 const PORT = process.env.PORT || 5000
-
 const mongodb = await connectDB()
+
 app.use(express.json())
 app.use(express.urlencoded({extended:true}))
 app.use(cors({
     origin: 'http://localhost:3000',
-    credentials: true
+    credentials: true   //allow cookies to be sent
 }))
 
 //express-session
@@ -27,7 +27,7 @@ app.use(
         secret: process.env.SESSION_KEY_1,
         resave: false,
         saveUninitialized: false,
-        store: MongoStore.create({
+        store: MongoStore.create({  //save session to mongoDB under collection name 'sessions'
             client: mongodb.connection.getClient(), 
             collectionName: 'sessions',
         }),
@@ -38,6 +38,7 @@ app.use(
         }
     })
 )
+
 //initialize passport
 app.use(passport.initialize())
 app.use(passport.session())
