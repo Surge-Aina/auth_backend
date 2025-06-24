@@ -9,6 +9,7 @@ import session from 'express-session'
 import MongoStore from 'connect-mongo'
 import passport from 'passport'
 import './config/passport.js'
+import rateLimit from 'express-rate-limit'
 
 const app = express()
 const PORT = process.env.PORT || 5000
@@ -17,7 +18,7 @@ const mongodb = await connectDB()
 app.use(express.json())
 app.use(express.urlencoded({extended:true}))
 app.use(cors({
-    origin: 'http://localhost:3000',
+    origin: process.env.FRONTEND_URL || 'http://localhost:3000',
     credentials: true   //allow cookies to be sent
 }))
 
@@ -33,8 +34,8 @@ app.use(
         }),
         cookie: {
             maxAge: 1000 * 60 * 60 * 24, // 1 day
-            sameSite: 'lax',
-            secure: false,//only use secure when in produnction: requires https
+            sameSite: process.env.NODE_ENV === 'production' ? 'none' : 'lax',
+            secure:  process.env.NODE_ENV === 'production' || false,//only use secure when in produnction: requires https
         }
     })
 )
@@ -43,7 +44,15 @@ app.use(
 app.use(passport.initialize())
 app.use(passport.session())
 
-app.use('/api', loginRoutes)
+//global rate limiter
+const globalLimiter = rateLimit({
+    windowMs: 12 * 60 * 1000,   //15 minutes
+    max: 100,                    //max requests per ip
+    message: 'Too many requests, please try again later'
+})
+
+app.use(globalLimiter)
+app.use('/', loginRoutes)
 
 app.listen(PORT, () => {
   console.log(`Server started on PORT: ${PORT}`)

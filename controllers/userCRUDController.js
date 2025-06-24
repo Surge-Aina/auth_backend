@@ -113,7 +113,7 @@ export const deleteSelf = async(req,res)=>{
     //check if user is authenticated/logged in
     if(req.isAuthenticated()){
         try{
-            let deletedUser = User.deleteOne({_id:req.user.id})
+            let deletedUser = User.deleteOne({email:req.user.email})
             res.status(200).json({message:`deleted user ${deletedUser.email}`})
         }catch(error){
             console.log(error)
@@ -123,4 +123,16 @@ export const deleteSelf = async(req,res)=>{
         res.status(401).json({message:'user is not loggedin'})
     }
     
+}
+
+export const getUsersByManager = async(req, res) => {
+    const {managerEmail} = req.params
+    try{
+        const userList = User.find({manager: managerEmail})
+        if(!userList) return res.status(404).json({message:'no workers found'})
+        res.status(200).json(userList)
+    }catch(error){
+        console.error('error finding users by email ', error)
+        res.status(500).json({message:'error finding users by manager'})
+    }
 }

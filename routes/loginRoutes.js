@@ -11,7 +11,8 @@ import {
     addUser,
     editUser,
     deleteUser,
-    deleteSelf
+    deleteSelf,
+    getUsersByManager
 } from '../controllers/userCRUDController.js'
 
 //function name: requireAdmin/requireManager
@@ -43,6 +44,13 @@ const requireManager = (req, res, next) => {
   //res.redirect(`${process.env.FRONTEND_URL}/login`)//user not logged in, redirected to login page
   return res.status(401).json({message:'Unathorized'})
 }
+const requireAuth = (req, res, next)=>{
+  if(req.isAuthenticated()){
+    return next()
+  }else{
+    return res.status(401).json({message:'Unauthorized'})
+  }
+}
 
 const router = express.Router()
 
@@ -50,10 +58,10 @@ router.post('/register', register)
 router.get('/user/:email', requireAdmin, getOneUser)
 router.get('/users',  getAllUsers)
 router.post('/addUser', requireAdmin, addUser)
-//router.put('/editUser', requireAdmin, editUser)
-router.delete('/deleteUser/:email',requireAdmin, deleteUser)
-router.delete('/deleteSelf', deleteSelf) 
-//router.get('/getUsersByManager/:manager, requireManager, getUsersByManager) toDo
+router.put('/editUser', requireAdmin, editUser)
+router.delete('/deleteUser/:email', deleteUser)
+router.delete('/deleteSelf', requireAuth, deleteSelf) 
+router.get('/getUsersByManager/:managerEmail', requireManager, getUsersByManager)
 
 //Passport Local login (email and password)
 // router.post('/auth/login', 
