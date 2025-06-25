@@ -25,6 +25,7 @@ export const register = async(req, res, next) => {
             return res.status(409).json({ message: 'User already exists' })
         }
 
+
         // Ri - proxy registration to Jaskaran's API
         const EMAIL_API_BASE = process.env.VITE_API_BASE || 'https://verify-email-server.onrender.com'
         try {
