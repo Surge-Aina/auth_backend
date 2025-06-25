@@ -71,7 +71,7 @@ const globalLimiter = rateLimit({
 })
 
 app.use(globalLimiter)
-app.use('/api', loginRoutes)
+app.use('/', loginRoutes)
 
 app.listen(PORT, () => {
   console.log(`Server started on PORT: ${PORT}`)

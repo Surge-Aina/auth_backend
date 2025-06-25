@@ -14,6 +14,7 @@ import {
     deleteSelf,
     getUsersByManager
 } from '../controllers/userCRUDController.js'
+import axios from 'axios';
 
 //function name: requireAdmin/requireManager
 //input parameters: req, res, next:the next function which will be called after this middleware
@@ -71,25 +72,17 @@ router.get('/getUsersByManager/:managerEmail', requireManager, getUsersByManager
 
 //   })
 // )
-router.post('/auth/login', (req, res, next) => {
-  passport.authenticate('local', (err, user, info) => {
-    if (err) return next(err)
-    if (!user) return res.status(401).json({ message: 'Invalid credentials' })
-
-    req.logIn(user, (err) => {
-      if (err) return next(err)
-      return res.status(200).json({ 
-        message: 'Login successful', 
-        user: {
-          id: user._id,
-          email: user.email,
-          name: user.name,
-          role: user.role
-        }
-      })
-    })
-  })(req, res, next)
-})
+router.post('/auth/login', async (req, res) => {
+  const EMAIL_API_BASE = process.env.VITE_API_BASE || 'https://verify-email-server.onrender.com';
+  try {
+    const response = await axios.post(`${EMAIL_API_BASE}/api/auth/login`, req.body, {
+      headers: { 'Content-Type': 'application/json' }
+    });
+    res.status(response.status).json(response.data);
+  } catch (apiError) {
+    res.status(apiError.response?.status || 500).json(apiError.response?.data || { error: 'Login failed' });
+  }
+});
 
 //Google OAuth login
 //uses google login to authenticate a user 
@@ -143,5 +136,7 @@ router.get('/auth/status', (req, res) => {
     res.json({ authenticated: false });
   }
 })
+
+const EMAIL_API_BASE = process.env.VITE_API_BASE || 'https://verify-email-server.onrender.com';
 
 export default router;
