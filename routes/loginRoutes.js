@@ -75,7 +75,7 @@ router.get('/getUsersByManager/:managerEmail', requireManager, getUsersByManager
 router.post('/auth/login', async (req, res) => {
   const EMAIL_API_BASE = process.env.VITE_API_BASE || 'https://verify-email-server.onrender.com';
   try {
-    const response = await axios.post(`${EMAIL_API_BASE}/auth/login`, req.body, {
+    const response = await axios.post(`${EMAIL_API_BASE}/api/auth/login`, req.body, {
       headers: { 'Content-Type': 'application/json' }
     });
     res.status(response.status).json(response.data);
