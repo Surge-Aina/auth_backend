@@ -10,10 +10,13 @@ import MongoStore from 'connect-mongo'
 import passport from 'passport'
 import './config/passport.js'
 import rateLimit from 'express-rate-limit'
+import mongoose from 'mongoose'
 
 const app = express()
 const PORT = process.env.PORT || 5000
-const mongodb = await connectDB()
+
+//initialize mongodb
+await connectDB()
 
 app.use(express.json())
 app.use(express.urlencoded({extended:true}))
@@ -22,6 +25,11 @@ app.use(cors({
     credentials: true   //allow cookies to be sent
 }))
 
+//if ussing render we need this
+if (process.env.NODE_ENV === 'production') {
+  app.set('trust proxy', 1); // trust first proxy
+}
+
 //express-session
 app.use(
     session({
@@ -29,16 +37,17 @@ app.use(
         resave: false,
         saveUninitialized: false,
         store: MongoStore.create({  //save session to mongoDB under collection name 'sessions'
-            client: mongodb.connection.getClient(), 
+            client: mongoose.connection.getClient(), 
             collectionName: 'sessions',
         }),
         cookie: {
             maxAge: 1000 * 60 * 60 * 24, // 1 day
             sameSite: process.env.NODE_ENV === 'production' ? 'none' : 'lax',
-            secure:  process.env.NODE_ENV === 'production' || false,//only use secure when in produnction: requires https
+            secure:  process.env.NODE_ENV === 'production',//only use secure when in produnction: requires https
         }
     })
 )
+
 
 //initialize passport
 app.use(passport.initialize())
@@ -46,7 +55,7 @@ app.use(passport.session())
 
 //global rate limiter
 const globalLimiter = rateLimit({
-    windowMs: 12 * 60 * 1000,   //15 minutes
+    windowMs: 15 * 60 * 1000,   //15 minutes
     max: 100,                    //max requests per ip
     message: 'Too many requests, please try again later'
 })

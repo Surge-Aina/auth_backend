@@ -78,6 +78,7 @@ router.post('/auth/login', (req, res, next) => {
 
     req.logIn(user, (err) => {
       if (err) return next(err)
+      console.log('User authenticated with email/password successfully:', req.user?.email)
       return res.status(200).json({ 
         message: 'Login successful', 
         user: {
@@ -108,7 +109,7 @@ router.get('/auth/google/callback',
   (req, res) => {
     // Successful authentication
     //session now active
-    console.log('User authenticated successfully:', req.user?.email)
+    console.log('User authenticated with google successfully:', req.user?.email)
     res.redirect(`${process.env.FRONTEND_URL}/${req.user.role}`) //redirects user to specific role dashboard
   }
 )
