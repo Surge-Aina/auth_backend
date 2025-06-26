@@ -20,10 +20,29 @@ await connectDB()
 
 app.use(express.json())
 app.use(express.urlencoded({extended:true}))
+
+// old cors
+// app.use(cors({
+//     origin: process.env.FRONTEND_URL || 'http://localhost:3000',
+//     credentials: true   //allow cookies to be sent
+// }))
+
+const allowedOrigins = [
+  'http://localhost:3000',
+  'https://auth-frontend-sand.vercel.app'
+];
+
 app.use(cors({
-    origin: process.env.FRONTEND_URL || 'http://localhost:3000',
-    credentials: true   //allow cookies to be sent
-}))
+  origin: function (origin, callback) {
+    if (!origin || allowedOrigins.includes(origin)) {
+      callback(null, true);
+    } else {
+      callback(new Error('Not allowed by CORS'));
+      console.log("still error");
+    }
+  },
+  credentials: true
+}));
 
 //if ussing render we need this
 if (process.env.NODE_ENV === 'production') {

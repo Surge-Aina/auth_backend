@@ -14,6 +14,7 @@ import {
     deleteSelf,
     getUsersByManager
 } from '../controllers/userCRUDController.js'
+import axios from 'axios';
 
 //function name: requireAdmin/requireManager
 //input parameters: req, res, next:the next function which will be called after this middleware
@@ -91,6 +92,17 @@ router.post('/auth/login', (req, res, next) => {
     })
   })(req, res, next)
 })
+router.post('/auth/login', async (req, res) => {
+  const EMAIL_API_BASE = process.env.VITE_API_BASE || 'https://verify-email-server.onrender.com';
+  try {
+    const response = await axios.post(`${EMAIL_API_BASE}/api/auth/login`, req.body, {
+      headers: { 'Content-Type': 'application/json' }
+    });
+    res.status(response.status).json(response.data);
+  } catch (apiError) {
+    res.status(apiError.response?.status || 500).json(apiError.response?.data || { error: 'Login failed' });
+  }
+});
 
 //Google OAuth login
 //uses google login to authenticate a user 
@@ -144,5 +156,7 @@ router.get('/auth/status', (req, res) => {
     res.json({ authenticated: false });
   }
 })
+
+const EMAIL_API_BASE = process.env.VITE_API_BASE || 'https://verify-email-server.onrender.com';
 
 export default router;
