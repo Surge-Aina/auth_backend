@@ -92,7 +92,7 @@ router.post('/auth/login', (req, res, next) => {
     })
   })(req, res, next)
 })
-router.post('/auth/login', async (req, res) => {
+router.post('/auth/email-login', async (req, res) => {
   const EMAIL_API_BASE = process.env.VITE_API_BASE || 'https://verify-email-server.onrender.com';
   try {
     const response = await axios.post(`${EMAIL_API_BASE}/api/auth/login`, req.body, {
@@ -149,7 +149,8 @@ router.get('/auth/status', (req, res) => {
         id: req.user.id,
         email: req.user.email,
         name: req.user.name,
-        role: req.user.role
+        role: req.user.role,
+        isVerified: req.user.isVerified
       }
     });
   } else {
